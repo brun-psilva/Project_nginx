@@ -1,0 +1,92 @@
+#!/bin/bash
+
+
+#Exibe a data e hora atual na tela
+echo "Data e hora atual: $data_hora"
+
+# Variável que armazena o status do serviços nginx
+#status=$(systemctl is-active nginx)
+
+# Diretório onde os logs serão armazenados
+log_dir=/home/bruno/projeto_nginx/logs
+
+# Verifica se o diretório existe, caso não, cria
+ if [ ! -d $log_dir ]; then
+	mkdir -p $log_dir
+ fi
+
+# Caminhos dos arquivos  de log
+log_ativo=$log_dir/nginx_status_ativo.log
+log_inativo=$log_dir/nginx_status_inativo.log
+html_output=$log_dir/status_nginx.html
+
+
+# Função para verificação do status e exibição da mensagem correspondente
+check_nginx() {
+	local data_hora=$(date +"%d-%m-%Y %H:%M:%S")  # Captura a data e  hora atual
+	local status=$(systemctl is-active nginx)
+	local mensagem
+  if [ $status == "active" ]; then
+	mensagem="O serviço Nginx está em excecução."
+	echo "$data_hora - $mensagem" >> "$log_ativo"
+  else
+	mensagem="O serviço Nginx não está em excecução."
+	echo "$data_hora - $mensagem" >> "$log_inativo"
+  fi
+# Exibe a mensagem com data e hora e pula uma linha
+	echo -e "\n$data_hora - $mensagem"
+
+}
+
+# Função de  gerar o  HTML a partir dos logs
+generate_html(){
+	 {
+echo "<!DOCTYPE html>"
+echo "<html>"
+echo "<head>"
+echo "<meta charset='UTF-8'>"
+echo "<meta http-equiv='refresh' content='300'>"
+echo "<title> Status do Nginx</title>"
+echo "<style>"
+echo "  body { font-family: Arial, sans-serif;}"
+echo "  h1 { color: #333; }"
+echo "  .log.active { background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; margin-bottom; 10px; }"
+echo "  .log.inactive { background-color: #dff0d8; border-color #d6e9c6; }"
+echo "</style>"
+echo "</head>"
+echo "<body>"
+echo " <h1>Status do Nginx - Atualizado em $data_hora</h1>"
+
+	# Adiciona o conteúdo dos logs no HTML
+	for log in "$log_ativo" "$log_inativo"; do
+	  if [ -f "$log" ]; then
+		  local tipo=$(basename "$log" | sed 's/nginx_status_//; s/.log//')
+		  echo "<div class='log ${tipo}'>"
+		  echo "<h2>Logs de Status ${tipo^}</h2>"
+		  echo "<pre>$(cat "$log")</pre>"
+		  echo "</div>"
+	else
+		  echo "<p>O arquivo de log de status ${tipo^} não foi encontrado.</p>"
+	fi
+	done
+echo "</body>"
+echo "</html>"
+	 } > "$html_output"
+
+	#Mover o arquivo HTML para o diretório servido pelo nginx.html
+	mv "$html_output" /var/www/html/status_nginx.html
+
+	}
+
+#  executa a  verificação e gera o html
+check_nginx
+generate_html
+
+
+if [ ! -f $log_ativo ]; then
+	touch $log_ativo
+fi
+
+if [ ! -f $log_inativo ]; then
+	touch $log_inativo
+fi
