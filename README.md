@@ -130,12 +130,12 @@ sudo visudo
 ```
 - Adicione a seguinte linha, substituindo pelo seu nome de usuário:
 ```
-bruno ALL=(ALL) NOPASSWD: /bin/systemctl
+User ALL=(ALL) NOPASSWD: /bin/systemctl
 ```
 ## Log de Erros:
 
 Para capturar possíveis erros, redirecione a saída de erro do script para um log:
 ```
-./verificar_nginx.sh 2>> /home/bruno/projeto_nginx/logs/error.log
+./verificar_nginx.sh 2>> /home/user/projeto_nginx/logs/error.log
 ```
 Isso ajudará a analisar as mensagens de erro geradas durante a execução.
