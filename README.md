@@ -34,13 +34,13 @@ O script realiza as seguintes ações:
 ### Variáveis
 
 - **`log_dir`**: Diretório onde os logs serão armazenados.
-  - Valor: `/home/bruno/projeto_nginx/logs`
+  `/home/bruno/projeto_nginx/logs`
 - **`log_ativo`**: Caminho do arquivo que armazena os logs quando o Nginx está ativo.
-  - Valor: `$log_dir/nginx_status_ativo.log`
+  `$log_dir/nginx_status_ativo.log`
 - **`log_inativo`**: Caminho do arquivo que armazena os logs quando o Nginx está inativo.
-  - Valor: `$log_dir/nginx_status_inativo.log`
+  `$log_dir/nginx_status_inativo.log`
 - **`html_output`**: Caminho do arquivo HTML que será gerado.
- - Valor: `$log_dir/status_nginx.html`
+  `$log_dir/status_nginx.html`
 
 ### Funções
 
