@@ -1,5 +1,7 @@
 # Verificação de Status do Nginx
 
+
+
 Este script em Bash verifica o status do serviço Nginx, armazena logs do status e gera um relatório em HTML que pode ser servido pelo Nginx.
 
 ## Sumário
@@ -9,6 +11,7 @@ Este script em Bash verifica o status do serviço Nginx, armazena logs do status
 - [Como Usar](#como-usar)
 - [Automatização com Cron](#automatização-com-cron)
 - [Observações](#observações)
+- [Possíveis Problemas na Geração do HTML](#possíveis-problemas-na-geração-do-html)
 
 ## Requisitos
 
@@ -85,3 +88,54 @@ Para automatizar a verificação do status do Nginx e a geração do HTML, adici
 - O arquivo HTML é sobrescrito a cada execução do script.
 - Os arquivos de log são atualizados de forma contínua, armazenando o histórico das verificações.
 - Certifique-se de que o usuário que executa o script tenha permissão para criar arquivos no diretório de logs e mover o HTML para `/var/www/html`.
+
+## Possíveis Problemas na Geração do HTML
+
+Possíveis Problemas na Geração do HTML
+Caso a geração do arquivo HTML falhe, verifique os seguintes pontos:
+
+# Permissões de Escrita:
+
+Certifique-se de que o usuário que executa o script tenha permissões de escrita no diretório de destino dos logs (/home/user/projeto_nginx/logs) e no diretório onde o HTML é armazenado `(/var/www/html)`.
+
+- Ajuste as permissões com:
+```
+sudo chmod -R 755 /home/user/projeto_nginx/logs
+sudo chmod -R 755 /var/www/html
+```
+# Existência dos Diretórios:
+
+- Verifique se os diretórios de destino existem. Caso contrário, crie-os com:
+
+```
+mkdir -p /home/user/projeto_nginx/logs
+mkdir -p /var/www/html
+```
+## Verificação de Erros no Script:
+
+Execute o script manualmente para identificar erros:
+```
+./verificar_nginx.sh
+```
+Isso pode ajudar a identificar problemas na geração do HTML ou ao mover o arquivo.
+
+## Logs Vazios:
+
+Caso os arquivos de log estejam vazios, o HTML gerado pode estar sem conteúdo. Verifique os arquivos `nginx_status_ativo.log` e `nginx_status_inativo.log.`
+Problemas de Acesso ao `systemctl`:
+
+- Certifique-se de que o usuário tenha permissão para executar systemctl sem sudo. Configure isso usando:
+```
+sudo visudo
+```
+- Adicione a seguinte linha, substituindo pelo seu nome de usuário:
+```
+bruno ALL=(ALL) NOPASSWD: /bin/systemctl
+```
+## Log de Erros:
+
+Para capturar possíveis erros, redirecione a saída de erro do script para um log:
+```
+./verificar_nginx.sh 2>> /home/bruno/projeto_nginx/logs/error.log
+```
+Isso ajudará a analisar as mensagens de erro geradas durante a execução.
